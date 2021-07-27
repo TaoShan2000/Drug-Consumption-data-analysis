@@ -1,0 +1,93 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+trainDat = read.csv('train_5level.csv', header = TRUE)
+testDat = read.csv('test_5level.csv', header = TRUE)
+testDat <- na.omit(testDat)
+trainDat$Cannabis <- as.character(trainDat$Cannabis)
+testDat$Cannabis <- as.character(testDat$Cannabis)
+```
+
+```{r}
+require(neuralnet)
+require(nnet)
+require(ggplot2)
+set.seed(1)
+```
+```{r}
+library(caret)
+```
+```{r}
+TrainingParameters <- trainControl(method = "cv", number = 5, savePredictions = TRUE)
+#nnetGrid <-  expand.grid(size = seq(from = 1, to = 9, by = 2),
+#                        decay = seq(from = 0.1, to = 0.5, by = 0.1))
+NNModel_1 <- train(Cannabis ~ ., data = trainDat,
+                  method = "nnet",
+                  trControl= TrainingParameters,
+                  #tuneGrid = nnetGrid,
+                  na.action = na.omit
+)
+```
+
+
+```{r}
+print(NNModel_1)
+```
+Hyperparameter pruning
+
+```{r}
+TrainingParameters <- trainControl(method = "cv", number = 5, savePredictions = FALSE)
+nnetGrid <-  expand.grid(size = seq(from = 1, to = 9, by = 2),
+                        decay = seq(from = 0.1, to = 0.5, by = 0.1))
+NNModel <- train(Cannabis ~ ., data = trainDat,
+                  method = "nnet",
+                  trControl= TrainingParameters,
+                  tuneGrid = nnetGrid,
+                  na.action = na.omit
+)
+
+```
+
+```{r}
+NNModel
+```
+
+Accuracy was used to select the optimal model using the largest value. The final values used for the model were size = 3 and decay = 0.1.  Cross validation score is 0.6312428  
+```{r}
+trainDat$Ketamine
+```
+
+```{r}
+nnetGrid <-  expand.grid(size = 3, decay = 0.1)
+NN_Model <- train(Cannabis ~ ., data = trainDat,
+                  method = "nnet",
+                  tuneGrid = nnetGrid,
+                  na.action = na.omit
+)
+
+test_n <- testDat[,-ncol(testDat)]
+test_labels <- testDat$Cannabis
+pred <- predict(NN_Model, newdata = test_n)
+result_table <- table(test_labels, pred)
+result_table
+paste('Testing accuracy is:', sum(diag(result_table)) / length(pred))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

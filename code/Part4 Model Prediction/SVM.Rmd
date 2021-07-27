@@ -1,0 +1,37 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+trainDat = read.csv("/Users/panzw0310/Desktop/train_nofactor.csv", header = TRUE)
+testDat = read.csv("/Users/panzw0310/Desktop/test_nofactor.csv", header = TRUE)
+trainDat$Cannabis = trainDat$Cannabis
+testDat$Cannabis = testDat$Cannabis
+testDat <- na.omit(testDat)
+trainDat$Cannabis <- as.character(trainDat$Cannabis)
+testDat$Cannabis <- as.character(testDat$Cannabis)
+```
+
+```{r}
+trainDat_X = as.matrix(trainDat[,1:ncol(trainDat)-1])
+trainDat_y = trainDat$Cannabis
+testDat_X = as.matrix(testDat[,1:ncol(trainDat)-1])
+testDat_y = testDat$Cannabis
+```
+
+```{r}
+library(e1071)
+```
+
+```{r}
+model <- svm(Cannabis ~ ., type = 'C-classification', data = trainDat)
+result <- predict(model,  testDat_X)
+```
+
+```{r}
+result_table <- table(testDat_y, result)
+result_table
+paste('Testing accuracy is:', sum(diag(result_table)) / length(testDat_y))
+```
+
