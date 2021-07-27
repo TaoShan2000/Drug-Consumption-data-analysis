@@ -21,3 +21,7 @@ For the data analysis part, you may do some of the following:
 4. Apply some machine learning methods for classification, regression, and/or clustering.
 5. For 3 and 4, you may compare different methods.
 6. For 3 and 4, you should evaluate the performance of your methods.
+
+Presentation：
+1.15−20minutes for the presentation. You will be stopped immediately after20minutes. You have toallocate your time wisely.
+2. Every group member is expected to present.
